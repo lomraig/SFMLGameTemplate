@@ -1,37 +1,42 @@
 #include "imgui.h"
-#include <stdio.h>
-#include "imgui_impl_null.h"
-#include "imgui_impl_null.cpp"
+#include "imgui-SFML.h"
 
-int main(int, char**)
-{
-    IMGUI_CHECKVERSION();
+#include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/System/Clock.hpp>
+#include <SFML/Window/Event.hpp>
 
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
+int main() {
+    sf::RenderWindow window(sf::VideoMode({640, 480}), "ImGui + SFML = <3");
+    window.setFramerateLimit(60);
+    ImGui::SFML::Init(window);
 
-    ImGui_ImplNullPlatform_Init();
-    ImGui_ImplNullRender_Init();
+    sf::CircleShape shape(100.f);
+    shape.setFillColor(sf::Color::Green);
 
-    for (int n = 0; n < 20; n++)
-    {
-        printf("NewFrame() %d\n", n);
-        ImGui_ImplNullPlatform_NewFrame();
-        ImGui_ImplNullRender_NewFrame();
-        ImGui::NewFrame();
+    sf::Clock deltaClock;
+    while (window.isOpen()) {
+        while (const auto event = window.pollEvent()) {
+            ImGui::SFML::ProcessEvent(window, *event);
 
-        static float f = 0.0f;
-        ImGui::Text("Hello, world!");
-        ImGui::SliderFloat("float", &f, 0.0f, 1.0f);
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
-        ImGui::ShowDemoWindow(nullptr);
+            if (event->is<sf::Event::Closed>()) {
+                window.close();
+            }
+        }
 
-        ImGui::Render();
+        ImGui::SFML::Update(window, deltaClock.restart());
+
+        ImGui::ShowDemoWindow();
+
+        ImGui::Begin("Hello, world!");
+        ImGui::Button("Look at this pretty button");
+        ImGui::End();
+
+        window.clear();
+        window.draw(shape);
+        ImGui::SFML::Render(window);
+        window.display();
     }
 
-    printf("DestroyContext()\n");
-    ImGui_ImplNullRender_Shutdown();
-    ImGui_ImplNullPlatform_Shutdown();
-    ImGui::DestroyContext();
-    return 0;
+    ImGui::SFML::Shutdown();
 }
