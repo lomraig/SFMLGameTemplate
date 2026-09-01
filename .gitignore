@@ -1,0 +1,10 @@
+.vscode/
+.vs/
+.idea/
+CMakeSettings.json
+
+build/
+bin/
+out/
+
+.cache/
