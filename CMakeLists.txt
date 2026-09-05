@@ -11,6 +11,10 @@ set(PRODUCTION_BUILD OFF CACHE BOOL "Make this a production build" FORCE)
 # optimizations only for prod
 if(PRODUCTION_BUILD)
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+
+	if(MSVC)
+		set_target_properties("${CMAKE_PROJECT_NAME}" PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup") # no cmd window
+	endif()
 else()
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)
 endif()
@@ -106,7 +110,6 @@ endif()
 
 if(MSVC)
 	target_compile_definitions("${CMAKE_PROJECT_NAME}" PUBLIC _CRT_SECURE_NO_WARNINGS)
-	set_target_properties("${CMAKE_PROJECT_NAME}" PROPERTIES LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup") # no cmd window
 endif()
 
 if (WIN32)
